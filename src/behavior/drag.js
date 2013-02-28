@@ -17,10 +17,12 @@ d3.behavior.drag = function() {
         moved = 0;
 
     var w = d3.select(d3_window)
-        .on(touchId != null ? "touchmove.drag-" + touchId : "mousemove.drag", dragmove)
         .on(touchId != null ? "touchend.drag-" + touchId : "mouseup.drag", dragend, true);
 
-    if (origin) {
+    var doc = d3.select(d3_document)
+        .on(touchId != null ? "touchmove.drag-" + touchId : "mousemove.drag", dragmove);
+
+    if (origin && origin()) {
       offset = origin.apply(target, arguments);
       offset = [offset.x - origin_[0], offset.y - origin_[1]];
     } else {
@@ -28,7 +30,7 @@ d3.behavior.drag = function() {
     }
 
     // Only cancel mousedown; touchstart is needed for draggable links.
-    if (touchId == null) d3_eventCancel();
+    // if (touchId == null) d3_eventCancel();
     event_({type: "dragstart"});
 
     function point() {
@@ -58,17 +60,17 @@ d3.behavior.drag = function() {
       // if moved, prevent the mouseup (and possibly click) from propagating
       if (moved) {
         d3_eventCancel();
-        if (d3.event.target === eventTarget) w.on("click.drag", click, true);
+        if (d3.event.target === eventTarget) doc.on("click.drag", click, true);
       }
 
-      w .on(touchId != null ? "touchmove.drag-" + touchId : "mousemove.drag", null)
-        .on(touchId != null ? "touchend.drag-" + touchId : "mouseup.drag", null);
+      w.on(touchId != null ? "touchend.drag-" + touchId : "mouseup.drag", null);
+      doc.on(touchId != null ? "touchmove.drag-" + touchId : "mousemove.drag", null);
     }
 
     // prevent the subsequent click from propagating (e.g., for anchors)
     function click() {
       d3_eventCancel();
-      w.on("click.drag", null);
+      doc.on("click.drag", null);
     }
   }
 
