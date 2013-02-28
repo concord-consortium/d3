@@ -23,6 +23,7 @@ d3.behavior.drag = function() {
       w.on("touchend.drag-" + touchId);
       doc.on("touchmove.drag-" + touchId);
     } else {
+      w.on("mouseup", dragend, true);
       w.on("mouseup.drag", dragend, true);
       w.on("dragend", dragend, true);
       doc.on("mousemove.drag", dragmove);
