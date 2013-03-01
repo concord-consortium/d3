@@ -16,18 +16,11 @@ d3.behavior.drag = function() {
         origin_ = point(),
         moved = 0;
 
-    var w = d3.select(d3_window);
-    var doc = d3.select(d3_document);
+    var w = d3.select(d3_window)
+        .on(touchId != null ? "touchend.drag-" + touchId : "mouseup.drag", dragend, true);
 
-    if (touchId != null) {
-      w.on("touchend.drag-" + touchId);
-      doc.on("touchmove.drag-" + touchId);
-    } else {
-      w.on("mouseup", dragend, true);
-      w.on("mouseup.drag", dragend, true);
-      w.on("dragend", dragend, true);
-      doc.on("mousemove.drag", dragmove);
-    }
+    var doc = d3.select(d3_document)
+        .on(touchId != null ? "touchmove.drag-" + touchId : "mousemove.drag", dragmove);
 
     if (origin && origin()) {
       offset = origin.apply(target, arguments);
@@ -70,15 +63,8 @@ d3.behavior.drag = function() {
         if (d3.event.target === eventTarget) doc.on("click.drag", click, true);
       }
 
-      if (touchId != null) {
-        w.on("touchend.drag-" + touchId);
-        doc.on("touchmove.drag-")
-      } else {
-        w.on("mouseup.drag", null);
-        w.on("dragend", null);
-        doc.on("mousemove.drag", null);
-      }
-
+      w.on(touchId != null ? "touchend.drag-" + touchId : "mouseup.drag", null);
+      doc.on(touchId != null ? "touchmove.drag-" + touchId : "mousemove.drag", null);
     }
 
     // prevent the subsequent click from propagating (e.g., for anchors)
